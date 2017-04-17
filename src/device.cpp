@@ -169,6 +169,7 @@ public:
 		v8::Local<v8::Array> results = New<v8::Array>(count);
 		for (size_t i = 0; i < count; i++) {
 			std::cout << "instanciate i:" << i << std::endl;
+			std::cout << "instanciate tagname:" << freefare_get_tag_friendly_name(tags[i]) << std::endl;
 			v8::Local<v8::Value> tmp = Tag::Instantiate(tags[i]);
 			Nan::Set(results, i, tmp);
 		}

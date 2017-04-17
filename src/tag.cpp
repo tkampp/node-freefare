@@ -62,6 +62,7 @@ NAN_METHOD(Tag::New) {
 	std::cout << "New hello 1" << std::endl;
 	if (info.IsConstructCall()) {
 		std::cout << "New hello ConstructCall 1" << std::endl;
+		std::cout << "New hello ConstructCall tagname:" << freefare_get_tag_friendly_name(Tag::constructorTag) << std::endl;
 		Tag *obj = new Tag(Tag::constructorTag);
 		Tag::constructorTag = NULL;
 		obj->Wrap(info.This());
@@ -82,6 +83,7 @@ v8::Handle<v8::Value> Tag::Instantiate(MifareTag constructorTag) {
 	Nan::HandleScope scope;
 
 	Tag::constructorTag = constructorTag;
+	std::cout << "instanciate hello tagname:" << freefare_get_tag_friendly_name(constructorTag) << std::endl;
 	v8::Local<v8::Value> argv[0] = {};
 
 	std::cout << "instanciate hello 2" << std::endl;
