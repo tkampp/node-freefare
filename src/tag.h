@@ -3,6 +3,7 @@
 
 #include <nan.h>
 #include <string>
+#include <iostream>
 
 extern "C" {
 	#include <nfc/nfc.h>
@@ -13,7 +14,13 @@ extern "C" {
 #include "device.h"
 #include "endian.h"
 
-
+struct freefare_tag {
+    nfc_device *device;
+    nfc_target info;
+    int type;
+    int active;
+    void (*free_tag) (FreefareTag tag);
+};
 
 
 class Tag: public Nan::ObjectWrap {

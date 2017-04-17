@@ -3,6 +3,7 @@
 
 #include <nan.h>
 #include <string>
+#include <iostream>
 
 extern "C" {
 	#include <nfc/nfc.h>

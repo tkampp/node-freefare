@@ -157,15 +157,20 @@ public:
 
 		v8::Local<v8::Value> err = Null();
 
+		std::cout << "libnfc_context:" << libnfc_context << std::endl;
 		// Find number of tags
 		size_t count = 0;
 		while(tags[count]) {
+			std::cout << "count:" << count << ":" << tags[count] << std::endl;
+			std::cout << "tags[count]->type:" << ((freefare_tag*)tags[count])->type << std::endl;
+			std::cout << "tags[count]->active:" << ((freefare_tag*)tags[count])->active << std::endl;
 			count++;
 		}
 
 		// Return tags objects
 		v8::Local<v8::Array> results = New<v8::Array>(count);
 		for (size_t i = 0; i < count; i++) {
+			std::cout << "instanciate i:" << i << std::endl;
 			v8::Local<v8::Value> tmp = Tag::Instantiate(tags[i]);
 			Nan::Set(results, i, tmp);
 		}

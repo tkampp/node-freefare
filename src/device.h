@@ -13,6 +13,7 @@ extern "C" {
 #include "tag.h"
 
 
+#include <iostream>
 
 
 class Device: public Nan::ObjectWrap {

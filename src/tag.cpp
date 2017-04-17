@@ -59,26 +59,34 @@ Nan::Persistent<v8::Function> & Tag::constructor() {
 }
 
 NAN_METHOD(Tag::New) {
+	std::cout << "New hello 1" << std::endl;
 	if (info.IsConstructCall()) {
+		std::cout << "New hello ConstructCall 1" << std::endl;
 		Tag *obj = new Tag(Tag::constructorTag);
 		Tag::constructorTag = NULL;
 		obj->Wrap(info.This());
 		info.GetReturnValue().Set(info.This());
+		std::cout << "New hello ConstructCall 2" << std::endl;
 	} else {
+		std::cout << "New hello not ConstructCall 1" << std::endl;
 		const int argc = 1;
 		v8::Local<v8::Value> argv[argc] = {info[0]};
 		v8::Local<v8::Function> cons = Nan::New(constructor());
 		info.GetReturnValue().Set(Nan::NewInstance(cons, argc, argv).ToLocalChecked());
+		std::cout << "New hello not ConstructCall 2" << std::endl;
 	}
 }
 
 v8::Handle<v8::Value> Tag::Instantiate(MifareTag constructorTag) {
+	std::cout << "instanciate hello 1" << std::endl;
 	Nan::HandleScope scope;
 
 	Tag::constructorTag = constructorTag;
 	v8::Local<v8::Value> argv[0] = {};
 
+	std::cout << "instanciate hello 2" << std::endl;
 	v8::Local<v8::Function> cons = Nan::New(constructor());
+	std::cout << "instanciate hello 3" << std::endl;
 	return Nan::NewInstance(cons, 0, argv).ToLocalChecked();
 }
 
