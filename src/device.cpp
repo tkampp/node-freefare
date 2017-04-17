@@ -162,8 +162,6 @@ public:
 		size_t count = 0;
 		while(tags[count]) {
 			std::cout << "count:" << count << ":" << tags[count] << std::endl;
-			std::cout << "tags[count]->type:" << ((freefare_tag*)tags[count])->type << std::endl;
-			std::cout << "tags[count]->active:" << ((freefare_tag*)tags[count])->active << std::endl;
 			count++;
 		}
 
