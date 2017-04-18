@@ -157,22 +157,46 @@ public:
 
 		v8::Local<v8::Value> err = Null();
 
-		std::cout << "libnfc_context:" << libnfc_context << std::endl;
+		std::cout << "device.cpp libnfc_context:" << libnfc_context << std::endl;
 		// Find number of tags
 		size_t count = 0;
 		while(tags[count]) {
-			std::cout << "count:" << count << ":" << tags[count] << std::endl;
+			std::cout << "device.cpp count:" << count << ":" << tags[count] << std::endl;
 			count++;
 		}
 
 		// Return tags objects
 		v8::Local<v8::Array> results = New<v8::Array>(count);
 		for (size_t i = 0; i < count; i++) {
-			std::cout << "instanciate i:" << i << std::endl;
-			std::cout << "instanciate tagname:" << freefare_get_tag_friendly_name(tags[i]) << std::endl;
+			std::cout << "device.cpp i:" << i << std::endl;
+			std::cout << "device.cpp tagname:" << freefare_get_tag_friendly_name(tags[i]) << std::endl;
 			v8::Local<v8::Value> tmp = Tag::Instantiate(tags[i]);
-			Nan::Set(results, i, tmp);
+			v8::Local<v8::Object> tmpObj = Nan::To<v8::Object>(Tag::Instantiate(tags[i])).ToLocalChecked();
+
+			// Detailstring
+			v8::String::Utf8Value tmpstr(Nan::ToDetailString(tmp).ToLocalChecked());
+			std::cout << "device.cpp object detailString:" << std::string(*tmpstr) << std::endl;
+
+			// ObjectProtoToString
+			v8::String::Utf8Value tmpstr2(Nan::ObjectProtoToString(tmpObj).ToLocalChecked());
+			std::cout << "device.cpp object ObjectProtoToString:" << std::string(*tmpstr2) << std::endl;
+
+			// Property name list
+			v8::Local<v8::Array> propertyList = Nan::GetPropertyNames(tmpObj).ToLocalChecked();
+			size_t length = propertyList->Get(v8::String::NewFromUtf8(v8::Isolate::GetCurrent(), "length"))->ToObject()->Uint32Value();
+			std::cout << "device.cpp object propertyList length:" << length << std::endl;
+			for (size_t i = 0; i < length; i++) {
+				std::cout << "device.cpp object propertyList[" << i << "]:";
+				v8::String::Utf8Value tmpstr3(Nan::Get(propertyList, i).ToLocalChecked());
+				std::cout << std::string(*tmpstr3) << std::endl;
+			}
+
+
+			Nan::Set(results, i, tmpObj);
 		}
+
+		v8::String::Utf8Value tmpstr4(Nan::ToDetailString(results).ToLocalChecked());
+		std::cout << "device.cpp array detailString:" << std::string(*tmpstr4) << std::endl;
 
 		v8::Local<v8::Value> argv[] = {
 			err,
