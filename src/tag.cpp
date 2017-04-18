@@ -89,7 +89,11 @@ v8::Handle<v8::Value> Tag::Instantiate(MifareTag constructorTag) {
 	std::cout << "instanciate hello 2" << std::endl;
 	v8::Local<v8::Function> cons = Nan::New(constructor());
 	std::cout << "instanciate hello 3" << std::endl;
-	return Nan::NewInstance(cons, 0, argv).ToLocalChecked();
+	v8::Handle<v8::Value> rtn = Nan::NewInstance(cons, 0, argv).ToLocalChecked();
+	std::cout << "instanciate hello 4" << std::endl;
+	v8::String::Utf8Value tmp(Nan::ToDetailString(rtn).ToLocalChecked());
+	std::cout << "instanciate hello 5:" << std::string(*tmp) << std::endl;
+	return rtn;
 }
 
 NAN_METHOD(Tag::GetTagType) {
