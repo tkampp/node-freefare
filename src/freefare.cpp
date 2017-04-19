@@ -83,6 +83,8 @@ public:
 			i++;
 		});
 
+		std::cout << "Freefare::ListDevices json_str(results)=" << json_str(results) << std::endl;
+
 		v8::Local<v8::Value> argv[] = {
 			New<v8::Number>(error),
 			results

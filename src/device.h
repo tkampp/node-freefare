@@ -41,5 +41,7 @@ private:
 	std::string connstring;
 };
 
+std::string json_str(v8::Handle<v8::Value> value);
+
 
 #endif /* NFF_DEVICE_H */

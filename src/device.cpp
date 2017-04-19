@@ -2,6 +2,7 @@
 
 using namespace Nan;
 
+
 Device::Device(std::string connstring) : connstring(connstring) {}
 Device::~Device() {}
 
@@ -157,42 +158,45 @@ public:
 
 		v8::Local<v8::Value> err = Null();
 
-		std::cout << "device.cpp libnfc_context:" << libnfc_context << std::endl;
+		std::cout << "Device::ListTags libnfc_context:" << libnfc_context << std::endl;
 		// Find number of tags
 		size_t count = 0;
 		while(tags[count]) {
-			std::cout << "device.cpp count:" << count << ":" << tags[count] << std::endl;
+			std::cout << "Device::ListTags count:" << count << ":" << tags[count] << std::endl;
 			count++;
 		}
 
 		// Return tags objects
 		v8::Local<v8::Array> results = New<v8::Array>(count);
 		for (size_t i = 0; i < count; i++) {
-			std::cout << "device.cpp i:" << i << std::endl;
-			std::cout << "device.cpp tagname:" << freefare_get_tag_friendly_name(tags[i]) << std::endl;
+			std::cout << "Device::ListTags i:" << i << std::endl;
+			std::cout << "Device::ListTags tagname:" << freefare_get_tag_friendly_name(tags[i]) << std::endl;
 			v8::Local<v8::Value> tmp = Tag::Instantiate(tags[i]);
-			v8::Local<v8::Object> tmpObj = Nan::To<v8::Object>(Tag::Instantiate(tags[i])).ToLocalChecked();
+			// v8::Local<v8::Object> tmpObj = Nan::To<v8::Object>(Tag::Instantiate(tags[i])).ToLocalChecked(); // Error not local
 
 			// Detailstring
 			v8::String::Utf8Value tmpstr(Nan::ToDetailString(tmp).ToLocalChecked());
-			std::cout << "device.cpp object detailString:" << std::string(*tmpstr) << std::endl;
+			std::cout << "Device::ListTags object detailString:" << std::string(*tmpstr) << std::endl;
+
+			// Json
+			std::cout << "Device::ListTags json_str:" << json_str(tmp) << std::endl;
 
 			// ObjectProtoToString
-			v8::String::Utf8Value tmpstr2(Nan::ObjectProtoToString(tmpObj).ToLocalChecked());
-			std::cout << "device.cpp object ObjectProtoToString:" << std::string(*tmpstr2) << std::endl;
+			// v8::String::Utf8Value tmpstr2(Nan::ObjectProtoToString(tmpObj).ToLocalChecked());
+			// std::cout << "device.cpp object ObjectProtoToString:" << std::string(*tmpstr2) << std::endl;
 
 			// Property name list
-			v8::Local<v8::Array> propertyList = Nan::GetPropertyNames(tmpObj).ToLocalChecked();
-			size_t length = propertyList->Get(v8::String::NewFromUtf8(v8::Isolate::GetCurrent(), "length"))->ToObject()->Uint32Value();
-			std::cout << "device.cpp object propertyList length:" << length << std::endl;
-			for (size_t i = 0; i < length; i++) {
-				std::cout << "device.cpp object propertyList[" << i << "]:";
-				v8::String::Utf8Value tmpstr3(Nan::Get(propertyList, i).ToLocalChecked());
-				std::cout << std::string(*tmpstr3) << std::endl;
-			}
+			// v8::Local<v8::Array> propertyList = Nan::GetPropertyNames(tmpObj).ToLocalChecked();
+			// size_t length = propertyList->Get(v8::String::NewFromUtf8(v8::Isolate::GetCurrent(), "length"))->ToObject()->Uint32Value();
+			// std::cout << "device.cpp object propertyList length:" << length << std::endl;
+			// for (size_t i = 0; i < length; i++) {
+			// 	std::cout << "device.cpp object propertyList[" << i << "]:";
+			// 	v8::String::Utf8Value tmpstr3(Nan::Get(propertyList, i).ToLocalChecked());
+			// 	std::cout << std::string(*tmpstr3) << std::endl;
+			// }
 
 
-			Nan::Set(results, i, tmpObj);
+			Nan::Set(results, i, tmp);
 		}
 
 		v8::String::Utf8Value tmpstr4(Nan::ToDetailString(results).ToLocalChecked());
@@ -257,3 +261,31 @@ NAN_METHOD(Device::Abort) {
 	Callback *callback = new Callback(info[0].As<v8::Function>());
 	AsyncQueueWorker(new AbortWorker(callback, obj->device));
 }
+
+
+// Json stringify a V8 value
+std::string json_str(v8::Handle<v8::Value> value)
+{
+    if (value.IsEmpty())
+    {
+        return std::string();
+    }
+
+	Nan:: HandleScope scope;
+
+	v8::Isolate* isolate = v8::Isolate::GetCurrent(); // returns NULL
+	if (!isolate) {
+		v8::Isolate::CreateParams *create_params = new v8::Isolate::CreateParams();
+	    isolate = v8::Isolate::New(*create_params);
+	    isolate->Enter();
+	}
+
+    v8::Local<v8::Object> json = isolate->GetCurrentContext()->
+        Global()->Get(v8::String::NewFromUtf8(isolate, "JSON"))->ToObject();
+    v8::Local<v8::Function> stringify = json->Get(v8::String::NewFromUtf8(isolate, "stringify")).As<v8::Function>();
+
+    v8::Local<v8::Value> result = stringify->Call(json, 1, &value);
+    v8::String::Utf8Value const str(result);
+
+    return std::string(*str, str.length());
+ }
