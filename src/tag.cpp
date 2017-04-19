@@ -78,7 +78,7 @@ NAN_METHOD(Tag::New) {
 	}
 }
 
-v8::Handle<v8::Value> Tag::Instantiate(MifareTag constructorTag) {
+v8::Handle<v8::Object> Tag::Instantiate(MifareTag constructorTag) {
 	std::cout << "Tag::Instanciate hello 1" << std::endl;
 	Nan::HandleScope scope;
 
@@ -89,11 +89,11 @@ v8::Handle<v8::Value> Tag::Instantiate(MifareTag constructorTag) {
 	std::cout << "Tag::Instanciate hello 2" << std::endl;
 	v8::Local<v8::Function> cons = Nan::New(constructor());
 	std::cout << "Tag::Instanciate hello 3" << std::endl;
-	v8::Handle<v8::Value> rtn = Nan::NewInstance(cons, 0, argv).ToLocalChecked();
+	v8::Handle<v8::Object> rtn = Nan::NewInstance(cons, 0, argv).ToLocalChecked();
 	std::cout << "Tag::Instanciate hello 4" << std::endl;
 	v8::String::Utf8Value tmp(Nan::ToDetailString(rtn).ToLocalChecked());
 	std::cout << "Tag::Instanciate ToDetailString:" << std::string(*tmp) << std::endl;
-	std::cout << "Tag::Instanciate json_str:" << json_str(rtn) << std::endl;
+	// std::cout << "Tag::Instanciate json_str:" << json_str(rtn) << std::endl;
 	return rtn;
 }
 

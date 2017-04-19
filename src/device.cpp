@@ -41,7 +41,7 @@ NAN_METHOD(Device::New) {
 	}
 }
 
-v8::Handle<v8::Value> Device::Instantiate(std::string connstring) {
+v8::Handle<v8::Object> Device::Instantiate(std::string connstring) {
 	Nan::HandleScope scope;
 
 	v8::Local<v8::Value> argv[1] = { Nan::New<v8::String>(connstring).ToLocalChecked() };
@@ -273,19 +273,26 @@ std::string json_str(v8::Handle<v8::Value> value)
 
 	Nan:: HandleScope scope;
 
+	std::cout << "json_str hello 1" << std::endl;
 	v8::Isolate* isolate = v8::Isolate::GetCurrent(); // returns NULL
 	if (!isolate) {
+		std::cout << "json_str hello 2" << std::endl;
 		v8::Isolate::CreateParams *create_params = new v8::Isolate::CreateParams();
 	    isolate = v8::Isolate::New(*create_params);
 	    isolate->Enter();
+		std::cout << "json_str hello 3" << std::endl;
 	}
 
     v8::Local<v8::Object> json = isolate->GetCurrentContext()->
         Global()->Get(v8::String::NewFromUtf8(isolate, "JSON"))->ToObject();
+		std::cout << "json_str hello 4" << std::endl;
     v8::Local<v8::Function> stringify = json->Get(v8::String::NewFromUtf8(isolate, "stringify")).As<v8::Function>();
+	std::cout << "json_str hello 5" << std::endl;
 
     v8::Local<v8::Value> result = stringify->Call(json, 1, &value);
+	std::cout << "json_str hello 6" << std::endl;
     v8::String::Utf8Value const str(result);
+	std::cout << "json_str hello 7" << std::endl;
 
     return std::string(*str, str.length());
  }

@@ -20,7 +20,7 @@ class Device: public Nan::ObjectWrap {
 
 public:
 	static NAN_MODULE_INIT(Init);
-	static v8::Handle<v8::Value> Instantiate(std::string connstring);
+	static v8::Handle<v8::Object> Instantiate(std::string connstring);
 
 private:
 	explicit Device(std::string connstring);

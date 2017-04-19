@@ -18,7 +18,7 @@ class Tag: public Nan::ObjectWrap {
 
 public:
 	static NAN_MODULE_INIT(Init);
-	static v8::Handle<v8::Value> Instantiate(MifareTag tag);
+	static v8::Handle<v8::Object> Instantiate(MifareTag tag);
 
 private:
 	explicit Tag(MifareTag tag);
