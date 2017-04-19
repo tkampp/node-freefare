@@ -47,7 +47,29 @@ v8::Handle<v8::Object> Device::Instantiate(std::string connstring) {
 	v8::Local<v8::Value> argv[1] = { Nan::New<v8::String>(connstring).ToLocalChecked() };
 
 	v8::Local<v8::Function> cons = Nan::New(constructor());
-	return Nan::NewInstance(cons, 1, argv).ToLocalChecked();
+
+	v8::Handle<v8::Object> rtn = Nan::NewInstance(cons, 1, argv).ToLocalChecked();
+
+	// DetailString
+	v8::String::Utf8Value tmpstr(Nan::ToDetailString(rtn).ToLocalChecked());
+	std::cout << "Device::Instantiate detailString: " << std::string(*tmpstr) << std::endl;
+
+	// ObjectProtoToString
+	v8::String::Utf8Value tmpstr2(Nan::ObjectProtoToString(rtn).ToLocalChecked());
+	std::cout << "Device::Instantiate ObjectProtoToString: " << std::string(*tmpstr2) << std::endl;
+
+	// Property name list
+	v8::Local<v8::Array> propertyList = Nan::GetPropertyNames(rtn).ToLocalChecked();
+	size_t length = propertyList->Get(v8::String::NewFromUtf8(v8::Isolate::GetCurrent(), "length"))->ToObject()->Uint32Value();
+	std::cout << "Device::Instantiate propertyList length: " << length << std::endl;
+	for (size_t i = 0; i < length; i++) {
+		std::cout << "Device::Instantiate propertyList[" << i << "]: ";
+		v8::String::Utf8Value tmpstr3(Nan::Get(propertyList, i).ToLocalChecked());
+		std::cout << std::string(*tmpstr3) << std::endl;
+	}
+	std::cout << "-------------" << std::endl;
+
+	return rtn;
 }
 
 /**
@@ -171,36 +193,18 @@ public:
 		for (size_t i = 0; i < count; i++) {
 			std::cout << "Device::ListTags i:" << i << std::endl;
 			std::cout << "Device::ListTags tagname:" << freefare_get_tag_friendly_name(tags[i]) << std::endl;
-			v8::Local<v8::Value> tmp = Tag::Instantiate(tags[i]);
-			// v8::Local<v8::Object> tmpObj = Nan::To<v8::Object>(Tag::Instantiate(tags[i])).ToLocalChecked(); // Error not local
+			v8::Local<v8::Object> tmp = Tag::Instantiate(tags[i]);
 
-			// Detailstring
+			// Get detail string
 			v8::String::Utf8Value tmpstr(Nan::ToDetailString(tmp).ToLocalChecked());
-			std::cout << "Device::ListTags object detailString:" << std::string(*tmpstr) << std::endl;
-
-			// Json
-			std::cout << "Device::ListTags json_str:" << json_str(tmp) << std::endl;
-
-			// ObjectProtoToString
-			// v8::String::Utf8Value tmpstr2(Nan::ObjectProtoToString(tmpObj).ToLocalChecked());
-			// std::cout << "device.cpp object ObjectProtoToString:" << std::string(*tmpstr2) << std::endl;
-
-			// Property name list
-			// v8::Local<v8::Array> propertyList = Nan::GetPropertyNames(tmpObj).ToLocalChecked();
-			// size_t length = propertyList->Get(v8::String::NewFromUtf8(v8::Isolate::GetCurrent(), "length"))->ToObject()->Uint32Value();
-			// std::cout << "device.cpp object propertyList length:" << length << std::endl;
-			// for (size_t i = 0; i < length; i++) {
-			// 	std::cout << "device.cpp object propertyList[" << i << "]:";
-			// 	v8::String::Utf8Value tmpstr3(Nan::Get(propertyList, i).ToLocalChecked());
-			// 	std::cout << std::string(*tmpstr3) << std::endl;
-			// }
+			std::cout << "Device::ListTags detailString: " << std::string(*tmpstr) << std::endl;
 
 
 			Nan::Set(results, i, tmp);
 		}
 
 		v8::String::Utf8Value tmpstr4(Nan::ToDetailString(results).ToLocalChecked());
-		std::cout << "device.cpp array detailString:" << std::string(*tmpstr4) << std::endl;
+		std::cout << "Device::ListTags array detailString:" << std::string(*tmpstr4) << std::endl;
 
 		v8::Local<v8::Value> argv[] = {
 			err,

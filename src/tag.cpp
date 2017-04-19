@@ -59,22 +59,18 @@ Nan::Persistent<v8::Function> & Tag::constructor() {
 }
 
 NAN_METHOD(Tag::New) {
-	std::cout << "New hello 1" << std::endl;
 	if (info.IsConstructCall()) {
-		std::cout << "New hello ConstructCall 1" << std::endl;
-		std::cout << "New hello ConstructCall tagname:" << freefare_get_tag_friendly_name(Tag::constructorTag) << std::endl;
 		Tag *obj = new Tag(Tag::constructorTag);
 		Tag::constructorTag = NULL;
 		obj->Wrap(info.This());
 		info.GetReturnValue().Set(info.This());
-		std::cout << "New hello ConstructCall 2" << std::endl;
+		std::cout << "Tag::New hello ConstructCall" << std::endl;
 	} else {
-		std::cout << "New hello not ConstructCall 1" << std::endl;
 		const int argc = 1;
 		v8::Local<v8::Value> argv[argc] = {info[0]};
 		v8::Local<v8::Function> cons = Nan::New(constructor());
 		info.GetReturnValue().Set(Nan::NewInstance(cons, argc, argv).ToLocalChecked());
-		std::cout << "New hello not ConstructCall 2" << std::endl;
+		std::cout << "Tag::New hello not ConstructCall" << std::endl;
 	}
 }
 
@@ -91,9 +87,26 @@ v8::Handle<v8::Object> Tag::Instantiate(MifareTag constructorTag) {
 	std::cout << "Tag::Instanciate hello 3" << std::endl;
 	v8::Handle<v8::Object> rtn = Nan::NewInstance(cons, 0, argv).ToLocalChecked();
 	std::cout << "Tag::Instanciate hello 4" << std::endl;
-	v8::String::Utf8Value tmp(Nan::ToDetailString(rtn).ToLocalChecked());
-	std::cout << "Tag::Instanciate ToDetailString:" << std::string(*tmp) << std::endl;
-	// std::cout << "Tag::Instanciate json_str:" << json_str(rtn) << std::endl;
+
+	// DetailString
+	v8::String::Utf8Value tmpstr(Nan::ToDetailString(rtn).ToLocalChecked());
+	std::cout << "Tag::Instanciate detailString: " << std::string(*tmpstr) << std::endl;
+
+	// ObjectProtoToString
+	v8::String::Utf8Value tmpstr2(Nan::ObjectProtoToString(rtn).ToLocalChecked());
+	std::cout << "Tag::Instanciate ObjectProtoToString: " << std::string(*tmpstr2) << std::endl;
+
+	// Property name list
+	v8::Local<v8::Array> propertyList = Nan::GetPropertyNames(rtn).ToLocalChecked();
+	size_t length = propertyList->Get(v8::String::NewFromUtf8(v8::Isolate::GetCurrent(), "length"))->ToObject()->Uint32Value();
+	std::cout << "Tag::Instanciate propertyList length: " << length << std::endl;
+	for (size_t i = 0; i < length; i++) {
+		std::cout << "Tag::Instanciate propertyList[" << i << "]: ";
+		v8::String::Utf8Value tmpstr3(Nan::Get(propertyList, i).ToLocalChecked());
+		std::cout << std::string(*tmpstr3) << std::endl;
+	}
+	std::cout << "-------------" << std::endl;
+
 	return rtn;
 }
 

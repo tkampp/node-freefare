@@ -79,9 +79,23 @@ public:
 		int i = 0;
 		for_each(devices.begin(), devices.end(),
 		[&](std::string connstring) {
-			Nan::Set(results, i, Device::Instantiate(connstring));
+			v8::Local<v8::Object> tmp = Device::Instantiate(connstring);
+
+			// Get detail string
+			v8::String::Utf8Value tmpstr(Nan::ToDetailString(tmp).ToLocalChecked());
+			std::cout << "Freefare::ListDevices detailString: " << std::string(*tmpstr) << std::endl;
+
+
+			Nan::Set(results, i, tmp);
 			i++;
 		});
+
+		// Create fake device for testing without device
+		// v8::Local<v8::Object> test = Device::Instantiate("test");
+
+		// Get detail string
+		// v8::String::Utf8Value tmpstr(Nan::ToDetailString(test).ToLocalChecked());
+		// std::cout << "Freefare::ListDevices test detailString: " << std::string(*tmpstr) << std::endl;
 
 		v8::Local<v8::Value> argv[] = {
 			New<v8::Number>(error),
