@@ -60,6 +60,13 @@ private:
 	static NAN_METHOD(mifareDesfire_write);
 	static NAN_METHOD(mifareDesfire_read);
 
+	static NAN_METHOD(ntag21x_connect);
+	static NAN_METHOD(ntag21x_disconnect);
+	static NAN_METHOD(ntag21x_get_info);
+	static NAN_METHOD(ntag21x_read4);
+	static NAN_METHOD(ntag21x_write);
+	static NAN_METHOD(ntag21x_get_subtype);
+	static NAN_METHOD(ntag21x_fast_read);
 
 private:
 	nfc_device* device;

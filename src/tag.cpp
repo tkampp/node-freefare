@@ -47,6 +47,12 @@ NAN_MODULE_INIT(Tag::Init) {
 	Nan::SetPrototypeMethod(tpl, "mifareDesfire_write", Tag::mifareDesfire_write);
 	Nan::SetPrototypeMethod(tpl, "mifareDesfire_read", Tag::mifareDesfire_read);
 
+	Nan::SetPrototypeMethod(tpl, "ntag21x_connect", Tag::ntag21x_connect);
+	Nan::SetPrototypeMethod(tpl, "ntag21x_disconnect", Tag::ntag21x_disconnect);
+	Nan::SetPrototypeMethod(tpl, "ntag21x_read4", Tag::ntag21x_read4);
+	Nan::SetPrototypeMethod(tpl, "ntag21x_write", Tag::ntag21x_write);
+    Nan::SetPrototypeMethod(tpl, "ntag21x_get_subtype", Tag::ntag21x_get_subtype);
+	Nan::SetPrototypeMethod(tpl, "ntag21x_fast_read", Tag::ntag21x_fast_read);
 
 	constructor().Reset(Nan::GetFunction(tpl).ToLocalChecked());
 	Nan::Set(target, Nan::New("Tag").ToLocalChecked(),
@@ -86,13 +92,14 @@ NAN_METHOD(Tag::GetTagType) {
 	Tag* obj = ObjectWrap::Unwrap<Tag>(info.This());
 
 	enum mifare_tag_type type = freefare_get_tag_type(obj->tag);
-	std::string typeStr = "Unknown";
+	std::string typeStr = "Unknown (" + std::to_string((int)type) + ")";
 	switch (type) {
 		case CLASSIC_1K: typeStr = "MIFARE_CLASSIC_1K"; break;
 		case CLASSIC_4K: typeStr = "MIFARE_CLASSIC_4K"; break;
 		case DESFIRE: typeStr = "MIFARE_DESFIRE"; break;
 		case ULTRALIGHT: typeStr = "MIFARE_ULTRALIGHT"; break;
 		case ULTRALIGHT_C: typeStr = "MIFARE_ULTRALIGHT_C"; break;
+		case NTAG_21x: typeStr = "NTAG_21x"; break;
 	}
 
 	info.GetReturnValue().Set(Nan::New<v8::String>(typeStr).ToLocalChecked());
