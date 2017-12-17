@@ -12,6 +12,7 @@ NAN_MODULE_INIT(Device::Init) {
 	tpl->InstanceTemplate()->SetInternalFieldCount(1);
 
 	Nan::SetPrototypeMethod(tpl, "open", Device::Open);
+	Nan::SetPrototypeMethod(tpl, "close", Device::Close);
 	Nan::SetPrototypeMethod(tpl, "listTags", Device::ListTags);
 	Nan::SetPrototypeMethod(tpl, "getConnstring", Device::GetConnstring);
 	Nan::SetPrototypeMethod(tpl, "abort", Device::Abort);

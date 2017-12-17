@@ -136,7 +136,7 @@ public:
 		int no_pages = end_page - start_page + 1;
 		length = no_pages * 4;
 		
-		data = (uint8_t*) malloc(length*sizeof(uint8_t));
+		data = (uint8_t*) malloc((length*sizeof(uint8_t))+1);
 		error = ntag21x_fast_read(tag, start_page, end_page, data);
 	}
 
